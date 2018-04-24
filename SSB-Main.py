@@ -413,5 +413,3 @@ async def on_message(message):
 			money = moneyfix(user, 10)
 			await client.send_message(message.channel, "SSB Money test. You received $10!\n\nYou have total of $%s." % money)
 		else: await client.send_message(message.channel, "<@%s>, You have to wait 1 minute to receive money again." % user.id)
-
-client.run("NDIxMzAzNTA5MjYzMDU2ODk2.DYPzvA.fPPp4ZXRtg3iG9s4RpXMHGd3xg8")
