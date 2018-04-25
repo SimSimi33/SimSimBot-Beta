@@ -10,6 +10,48 @@ import os
 
 client = commands.Bot(command_prefix = "ssb")
 
+def moneycheck(user):
+	fmoney = open("C:/SSBData/moneylist.txt", "r")
+	line = fmoney.readlines()
+	lines = 0
+	while True:
+		if lines + 1 > len(line):
+			fmoney.close()
+			fmoney = open("C:/SSBData/moneylist.txt", "a")
+			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
+			return 0
+		line0 = line[lines].split()
+		data0 = ""
+		if line0[0] == str(user.id):
+			return line0[1]
+		lines += 1
+
+def moneyfix(user, moneyindex):
+	fmoney = open("C:/SSBData/moneylist.txt", "r")
+	line = fmoney.readlines()
+	lines = 0
+	while True:
+		if lines + 1 > len(line):
+			fmoney.close()
+			fmoney = open("C:/SSBData/moneylist.txt", "a")
+			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
+			return moneyindex
+		line0 = line[lines].split()
+		data0 = ""
+		if line0[0] == str(user.id):
+			money_def = int(line0[1]) + moneyindex
+			line[lines] = "%s %s" % (user.id, money_def)
+			fmoney.close()
+			fmoney = open("C:/SSBData/moneylist.txt", "w")
+			for data in line:
+				if len(data) > 3:
+					# If line is blank, program does not duplicate line to data.
+					data0 += "%s\n" % data
+			fmoney.write(data0)
+			fmoney.close()
+			return money_def
+		lines += 1
+
 def moneyfix(user, moneyindex):
 	fmoney = open("C:/SSBData/moneylist.txt", "r")
 	line = fmoney.readlines()
@@ -342,6 +384,18 @@ async def imgur(mch, msg, user):
 	except:
 		await client.send_message(mch,"Sorry, But please try again in a few seconds.")
 
+async def dailymoney(mch, user):
+	if dailyupdate(user):
+		beforemoney = moneycheck(user)
+		aftermoney = moneyfix(user, 10)
+		embed = discord.Embed(title="Here is money for you!", description="Thank you for your hard work, again!", color=0x25DFE4)
+		embed.add_field(name="Before", value="$%s" % beforemoney, inline=True)
+		embed.add_field(name="After", value="$%s" % aftermoney, inline=True)
+		embed.set_thumbnail(url=user.avatar_url)
+		await client.send_message(mch, embed = embed)
+	else: await client.send_message(mch, "<@%s>, You have to wait 1 minute to receive money again." % user.id)
+
+
 async def credit(mch, server):
 	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.6(Build 410)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
 	embed.set_thumbnail(url=server.icon_url)
@@ -409,7 +463,4 @@ async def on_message(message):
 	elif re.compile("^SSB (IMGUR|IMGURIMAGE)", re.I).search(tomsg):
 		await imgur(mch, msg, user)
 	elif re.compile("^SSB (DAILY|DAILYMONEY)", re.I).search(tomsg):
-		if dailyupdate(user):
-			money = moneyfix(user, 10)
-			await client.send_message(message.channel, "SSB Money test. You received $10!\n\nYou have total of $%s." % money)
-		else: await client.send_message(message.channel, "<@%s>, You have to wait 1 minute to receive money again." % user.id)
+		await dailymoney(mch, user)
