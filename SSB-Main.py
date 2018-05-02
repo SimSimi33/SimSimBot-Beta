@@ -92,7 +92,7 @@ def dailyupdate(user):
 		line0 = line[lines].split()
 		data0 = ""
 		if line0[0] == str(user.id):
-			if float(line0[1]) > ftime - 60:
+			if float(line0[1]) > ftime - 300:
 				return 0
 			line[lines] = "%s %s" % (user.id,ftime)
 			fmoney.close()
@@ -326,10 +326,12 @@ async def wiki(mch, msg, user, nomsg):
 							if row >= len(redata):
 								embed = discord.Embed(title="SSB Wiki:%s Revision %s" % (m.group(1),m.group(3)), description="Edited by %s%s" % (author, data), color=0x25DFE4)
 								await client.send_message(mch, embed = embed)
+								row = 0
 								break
 							elif redata[row] == "<version %s>" % str(int(m.group(3)) + 1):
 								embed = discord.Embed(title="SSB Wiki:%s Revision %s" % (m.group(1),m.group(3)), description="Edited by %s%s" % (author, data), color=0x25DFE4)
 								await client.send_message(mch, embed = embed)
+								row = 0
 								break
 					elif row == len(redata):
 						await client.send_message(mch, "Sorry, but revision **<%s>** does not exist!" % m.group(3))
@@ -393,14 +395,22 @@ async def dailymoney(mch, user):
 		embed.add_field(name="After", value="$%s" % aftermoney, inline=True)
 		embed.set_thumbnail(url=user.avatar_url)
 		await client.send_message(mch, embed = embed)
-	else: await client.send_message(mch, "<@%s>, You have to wait 1 minute to receive money again." % user.id)
+	else: await client.send_message(mch, "<@%s>, You have to wait 5 minutes to receive money again." % user.id)
 
+async def greeting(mch, user):
+	fgreet = open("C:/SSBData/Greets/hellolist.txt", "r")
+	line = fgreet.readlines()
+	await client.send_message(mch, "<@%s>, %s" % (user.id, line[randint(0, len(line) - 1)]))
+
+async def greeting_kor(mch, user):
+	fgreet = open("C:/SSBData/Greets/hellolist_kor.txt", "r")
+	line = fgreet.readlines()
+	await client.send_message(mch, "<@%s>, %s" % (user.id, line[randint(0, len(line) - 1)]))
 
 async def credit(mch, server):
-	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.6(Build 410)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.8(Build 420)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
-
 
 @client.event
 async def on_ready():
@@ -464,3 +474,17 @@ async def on_message(message):
 		await imgur(mch, msg, user)
 	elif re.compile("^SSB (DAILY|DAILYMONEY)", re.I).search(tomsg):
 		await dailymoney(mch, user)
+	elif re.compile("^SSB (MONEY|CURRENTMONEY)", re.I).search(tomsg):
+		currentmoney = moneycheck(user)
+		embed = discord.Embed(title="Money info of %s" % user.name, color=0x25DFE4)
+		embed.add_field(name="Money", value="$%s" % currentmoney, inline=True)
+		embed.set_thumbnail(url=user.avatar_url)
+		await client.send_message(mch, embed = embed)
+	elif re.compile("^SSB (HELLO|HI)$", re.I).search(tomsg):
+		await greeting(mch, user)
+	elif re.compile("^<@421303509263056896>(| HELLO| HI)$", re.I).search(tomsg):
+		await greeting(mch,user)
+	elif re.compile("^(SSB|심심봇) (안녕|반가워|하이|ㅎㅇ)$", re.I).search(tomsg):
+		await greeting_kor(mch, user)
+	elif re.compile("^<@421303509263056896>(| 안녕| 반가워| 하이| ㅎㅇ)$", re.I).search(tomsg):
+		await greeting_kor(mch, user)
