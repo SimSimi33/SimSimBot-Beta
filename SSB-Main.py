@@ -408,7 +408,7 @@ async def greeting_kor(mch, user):
 	await client.send_message(mch, "<@%s>, %s" % (user.id, line[randint(0, len(line) - 1)]))
 
 async def credit(mch, server):
-	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.8(Build 420)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.7(Build 423)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
 
@@ -474,7 +474,7 @@ async def on_message(message):
 		await imgur(mch, msg, user)
 	elif re.compile("^SSB (DAILY|DAILYMONEY)", re.I).search(tomsg):
 		await dailymoney(mch, user)
-	elif re.compile("^SSB (MONEY|CURRENTMONEY)", re.I).search(tomsg):
+	elif re.compile("^SSB (MONEY|CURRENTMONEY|MONEYCHECK)", re.I).search(tomsg):
 		currentmoney = moneycheck(user)
 		embed = discord.Embed(title="Money info of %s" % user.name, color=0x25DFE4)
 		embed.add_field(name="Money", value="$%s" % currentmoney, inline=True)
@@ -482,7 +482,7 @@ async def on_message(message):
 		await client.send_message(mch, embed = embed)
 	elif re.compile("^SSB (HELLO|HI)$", re.I).search(tomsg):
 		await greeting(mch, user)
-	elif re.compile("^<@421303509263056896>(| HELLO| HI)$", re.I).search(tomsg):
+	elif re.compile("^<@421303509263056896>( HELLO| HI)$", re.I).search(tomsg):
 		await greeting(mch,user)
 	elif re.compile("^(SSB|심심봇) (안녕|반가워|하이|ㅎㅇ)$", re.I).search(tomsg):
 		await greeting_kor(mch, user)
