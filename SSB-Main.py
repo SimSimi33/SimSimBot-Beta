@@ -455,7 +455,9 @@ async def on_message(message):
 		if m:
 			await client.send_message(message.channel, "We are still working for this, so please wait for a while.")
 		else:
-			await client.send_message(message.channel, "Here is a Google link for you!\n( https://www.google.co.kr/search?q=%s )" % (" ".join(msg[2:])))
+			p = re.compile("\s")
+			switched_search = p.sub('%20', " ".join(msg[2:]))
+			await client.send_message(message.channel, "Here is a Google link for you!\n( https://www.google.co.kr/search?q=%s )" % (switched_search))
 	elif re.compile("^SSB MEMO", re.I).search(tomsg):
 		await memo(tomsg, mch, msg, user)
 	elif re.compile("^SSB WIKI", re.I).search(tomsg):
