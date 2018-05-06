@@ -344,8 +344,102 @@ async def wiki(mch, msg, user, nomsg):
 			embed = discord.Embed(title="SSB Wiki:%s" % m.group(1), description=fwiki.read(), color=0x25DFE4)
 			fwiki.close()
 			await client.send_message(mch, embed = embed)
-		else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist!" % m.group(1))
+		else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist." % m.group(1))
 
+async def tag(mch, msg, user, nomsg):
+	taglist = os.listdir('C:/SSBData/tags')
+	if re.compile("^S!TAG (EDIT) (.+?) (.+)$", re.S | re.I).search(nomsg):
+		m = re.compile("^S!TAG (EDIT) (.+?) (.+)$", re.S | re.I).search(nomsg)
+		fver = open("C:/SSBData/tagowner.txt", "r")
+		if m.group(1).upper() == 'EDIT':
+			ftag = open("C:/SSBData/tags/%s.txt" % msg[2], "w")
+			if '%s.txt' % msg[2] in taglist:
+				line = fver.readlines()
+				lines = 0
+				while True:
+					if lines + 1 > len(line):
+						fver.close()
+						fver = open("C:/SSBData/tagowner.txt", "a")
+						fver.write("%s %s\n" % (msg[2], user.id))
+						ftag.write('%s' % msg[3:])
+						fver.close()
+						fver = open("C:/SSBData/tagownernick.txt", "a")
+						fver.write("%s %s#%s\n" % (msg[2], user.name, user.discriminator))
+						break
+					line0 = line[lines].split(" ")
+					if line0[0] == msg[2]:
+						if user.id == line0[1]:
+							ftag.write('%s' % msg[3:])
+						break
+					lines += 1
+			else:
+				fver.close()
+				fver = open("C:/SSBData/tagowner.txt", "a")
+				fver.write("%s %s\n" % (m.group(2), user.id))
+				ftag.write('%s' % m.group(3))
+				fver.close()
+				fver = open("C:/SSBData/tagownernick.txt", "a")
+				fver.write("%s %s#%s\n" % (m.group(2), user.name, user.discriminator))
+			await client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
+	else:
+		if '%s.txt' % msg[1] in taglist:
+			ftagcount = open("C:/SSBData/tagcount.txt", "r")
+			line = ftagcount.readlines()
+			lines = 0
+			while True:
+				if lines + 1 > len(line):
+					ftagcount.close()
+					ftagcount = open("C:/SSBData/tagcount.txt", "a")
+					ftagcount.write("%s 1\n" % user.id)
+					break
+				line0 = line[lines].split(" ")
+				data0 = ""
+				if line0[0] == str(user.id):
+					tagcount = int(line0[1]) + 1
+					line[lines] = "%s %s" % (msg[1],tagcount)
+					ftagcount.close()
+				ftagcount = open("C:/SSBData/tagcount.txt", "w")
+				for data in line:
+					if len(data) > 3:
+						# If line is blank, program does not duplicate line to data.
+						data0 += "%s\n" % data
+				ftagcount.write(data0)
+				ftagcount.close()
+				lines += 1
+			tagcontent = open("C:/SSBData/tags/%s.txt" % msg[1], "r")
+			await client.send_message(mch, tagcontent.read())
+		elif msg[1].upper() == 'RAW':
+			if '%s.txt' % msg[2] in taglist:
+				ftag = open("C:/SSBData/tags/%s.txt" % msg[2], "a")
+				await client.send_message(mch, "Raw of Tag **%s**\n`%s`" % (msg[2], ftag.read()))
+			else: await client.send_message(mch, "Sorry, but tag **<%s>** does not exist." % msg[2])
+		elif msg[1].upper() == 'INFO':
+			ftagcount = open("C:/SSBData/tagcount.txt", "r")
+			line = ftagcount.readlines()
+			lines = 0
+			while True:
+				if lines + 1 > len(line):
+					tagcount = 0
+					break
+				line0 = line[lines].split(" ")
+				if line0[0] == msg[2]:
+					tagcount = int(line0[1])
+					break
+				lines += 1
+			fver = open("C:/SSBData/tagownernick.txt", "r")
+			line = fver.readlines()
+			lines = 0
+			while True:
+				line0 = line[lines].split(" ")
+				if line0[0] == msg[2]:
+					tagowner = line0[1]
+					break
+				lines += 1
+			embed = discord.Embed(title="Tag **%s** Info" % msg[1], description="slice of information of %s" % msg[1], color=0x25DFE4)
+			embed.add_field(name="Creator", value=tagowner, inline=True)
+			embed.add_field(name="Used", value=tagcount, inline=True)
+			await client.send_message(mch, embed = embed)
+		else: await client.send_message(mch, "Sorry, but tag **<%s>** does not exist." % msg[1])
 async def dice(mch, nomsg, user):
 	m = re.compile("^SSB ([0-9]+)D([0-9]+)$", re.I).search(nomsg)
 	numlist = []
@@ -490,3 +584,5 @@ async def on_message(message):
 		await greeting_kor(mch, user)
 	elif re.compile("^<@421303509263056896>(| 안녕| 반가워| 하이| ㅎㅇ)$", re.I).search(tomsg):
 		await greeting_kor(mch, user)
+	elif re.compile("^S!TAG", re.I).search(tomsg):
+		await tag(mch, msg, user, nomsg)f2HiuQ")
