@@ -585,4 +585,4 @@ async def on_message(message):
 	elif re.compile("^<@421303509263056896>(| 안녕| 반가워| 하이| ㅎㅇ)$", re.I).search(tomsg):
 		await greeting_kor(mch, user)
 	elif re.compile("^S!TAG", re.I).search(tomsg):
-		await tag(mch, msg, user, nomsg)f2HiuQ")
+		await tag(mch, msg, user, nomsg)
