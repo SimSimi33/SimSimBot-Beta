@@ -18,9 +18,12 @@ def moneycheck(user):
 		if lines + 1 > len(line):
 			fmoney.close()
 			fmoney = open("C:/SSBData/moneylist.txt", "a")
-			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
+			fmoney.write("%s 0" % user.id)
 			return 0
 		line0 = line[lines].split()
+		if len(line0) == 0:
+			lines += 1
+			continue
 		data0 = ""
 		if line0[0] == str(user.id):
 			return line0[1]
@@ -37,6 +40,9 @@ def moneyfix(user, moneyindex):
 			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
 			return moneyindex
 		line0 = line[lines].split()
+		if len(line0) == 0:
+			lines += 1
+			continue
 		data0 = ""
 		if line0[0] == str(user.id):
 			money_def = int(line0[1]) + moneyindex
@@ -63,6 +69,9 @@ def moneyfix(user, moneyindex):
 			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
 			return moneyindex
 		line0 = line[lines].split()
+		if len(line0) == 0:
+			lines += 1
+			continue
 		data0 = ""
 		if line0[0] == str(user.id):
 			money_def = int(line0[1]) + moneyindex
@@ -89,7 +98,10 @@ def dailyupdate(user):
 			fmoney = open("C:/SSBData/dailyupdate.txt", "a")
 			fmoney.write("%s %s\n" % (user.id,ftime))
 			return 1
-		line0 = line[lines].split()
+		line0 = line[lines].split(" ")
+		if len(line0) == 0:
+			lines += 1
+			continue
 		data0 = ""
 		if line0[0] == str(user.id):
 			if float(line0[1]) > ftime - 300:
@@ -104,6 +116,7 @@ def dailyupdate(user):
 			fmoney.write(data0)
 			fmoney.close()
 			return 1
+			break
 		lines += 1
 
 async def ping(user, mch, msg):
@@ -116,7 +129,10 @@ async def ping(user, mch, msg):
 			fping = open("C:/SSBData/pingcount.txt", "a")
 			fping.write("%s 1\n" % user.id)
 			break
-		line0 = line[lines].split(" ")
+		line0 = line[lines].split()
+		if len(line0) == 0:
+			lines += 1
+			continue
 		data0 = ""
 		if line0[0] == str(user.id):
 			pingcount = int(line0[1]) + 1
@@ -502,7 +518,7 @@ async def greeting_kor(mch, user):
 	await client.send_message(mch, "<@%s>, %s" % (user.id, line[randint(0, len(line) - 1)]))
 
 async def credit(mch, server):
-	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.7(Build 423)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.8(Build 435)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
 
