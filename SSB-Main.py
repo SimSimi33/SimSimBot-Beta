@@ -517,8 +517,21 @@ async def greeting_kor(mch, user):
 	line = fgreet.readlines()
 	await client.send_message(mch, "<@%s>, %s" % (user.id, line[randint(0, len(line) - 1)]))
 
+async def backward(mch, nomsg):
+	if len(nomsg) == 2:
+		await client.send_message(mch, "<@%s>, please enter words to flip!" % user.id)
+	back_before = nomsg[2:]
+	back_after = ""
+	back_num = 0
+	back_fin = -1 * len(back_before)
+	while True:
+		back_num = back_num - 1
+		back_after += back_before[back_num]
+		if back_num == back_fin:
+			await client.send_message(mch, back_after)
+
 async def credit(mch, server):
-	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.8(Build 435)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.9(Build 435)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
 
@@ -539,9 +552,9 @@ async def on_message(message):
 		return
 	elif re.compile("^SSB (PING|PONG)$", re.I).search(tomsg):
 		await ping(user, mch, msg)
-	elif re.compile("^SSB HELP", re.I).search(tomsg):
+	elif re.compile("^SSB (HELP|HELP ME)$", re.I).search(tomsg):
 		await help(mch)
-	elif re.compile("^SSB (도움|도움말|헬프)", re.I).search(tomsg):
+	elif re.compile("^(SSB|심심봇) (도움|도움말|헬프|도와줘)", re.I).search(tomsg):
 		await help_kor(mch)
 	elif re.compile("^SSB (ECHO|MIRROR)").search(tomsg):
 		msg = message.content.split(" ")
@@ -576,7 +589,7 @@ async def on_message(message):
 		await credit(mch, server)
 	elif re.compile("^SSB (UPDATE|LATESTUPDATE)", re.I).search(tomsg):
 		await latestupdate(mch)
-	elif re.compile("^SSB (업데이트|최근업데이트|최신업데이트|최신업뎃)", re.I).search(tomsg):
+	elif re.compile("^(SSB|심심봇) (업데이트|최근업데이트|최신업데이트|최신업뎃)", re.I).search(tomsg):
 		await latestupdate_kor(mch)
 	elif re.compile("^SSB (SAY|SPEAK)", re.I).search(tomsg):
 		await client.send_message(message.channel, "%s" % " ".join(msg[2:]))
@@ -600,5 +613,7 @@ async def on_message(message):
 		await greeting_kor(mch, user)
 	elif re.compile("^<@421303509263056896>(| 안녕| 반가워| 하이| ㅎㅇ)$", re.I).search(tomsg):
 		await greeting_kor(mch, user)
+	elif re.compile("^SSB (BACKWARD|FLIP)", re.I).search(tomsg):
+		await backward(mch, nomsg)
 	elif re.compile("^S!TAG", re.I).search(tomsg):
 		await tag(mch, msg, user, nomsg)
