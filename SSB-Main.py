@@ -517,10 +517,10 @@ async def greeting_kor(mch, user):
 	line = fgreet.readlines()
 	await client.send_message(mch, "<@%s>, %s" % (user.id, line[randint(0, len(line) - 1)]))
 
-async def backward(mch, nomsg):
-	if len(nomsg) == 2:
+async def backward(mch, user, msg, nomsg):
+	if len(msg) == 2:
 		await client.send_message(mch, "<@%s>, please enter words to flip!" % user.id)
-	back_before = nomsg[2:]
+	back_before = " ".join(msg[2:])
 	back_after = ""
 	back_num = 0
 	back_fin = -1 * len(back_before)
@@ -531,7 +531,7 @@ async def backward(mch, nomsg):
 			await client.send_message(mch, back_after)
 
 async def credit(mch, server):
-	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.9(Build 435)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.9(Build 439)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
 
@@ -614,6 +614,6 @@ async def on_message(message):
 	elif re.compile("^<@421303509263056896>(| 안녕| 반가워| 하이| ㅎㅇ)$", re.I).search(tomsg):
 		await greeting_kor(mch, user)
 	elif re.compile("^SSB (BACKWARD|FLIP)", re.I).search(tomsg):
-		await backward(mch, nomsg)
+		await backward(mch, user, msg, nomsg)
 	elif re.compile("^S!TAG", re.I).search(tomsg):
 		await tag(mch, msg, user, nomsg)
