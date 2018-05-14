@@ -422,8 +422,8 @@ async def tag(mch, msg, user, nomsg):
 				ftagcount.write(data0)
 				ftagcount.close()
 				lines += 1
-			tagcontent = open("C:/SSBData/tags/%s.txt" % msg[1], "r")
-			await client.send_message(mch, tagcontent.read())
+			tagcontent = open("C:/SSBData/tags/%s.txt" % msg[1], "r").read()
+			await client.send_message(mch, tagcontent)
 		elif msg[1].upper() == 'RAW':
 			if '%s.txt' % msg[2] in taglist:
 				ftag = open("C:/SSBData/tags/%s.txt" % msg[2], "a")
