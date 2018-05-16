@@ -534,7 +534,7 @@ async def choose(mch, user, msg):
 	if len(msg) <= 2:
 		await client.send_message(mch, "<@%s>, please enter more than 2 words to choose one of them!" % user.id)
 	else:
-		await client.send_message(mch, msg[randint(2, len(msg))])
+		await client.send_message(mch, msg[randint(2, len(msg) - 1)])
 
 async def credit(mch, server):
 	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.10(Build 443)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
