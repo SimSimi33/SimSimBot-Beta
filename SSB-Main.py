@@ -422,8 +422,8 @@ async def tag(mch, msg, user, nomsg):
 				ftagcount.write(data0)
 				ftagcount.close()
 				lines += 1
-			tagcontent = open("C:/SSBData/tags/%s.txt" % msg[1], "r")
-			await client.send_message(mch, tagcontent.read())
+			tagcontent = open("C:/SSBData/tags/%s.txt" % msg[1], "r").read()
+			await client.send_message(mch, tagcontent)
 		elif msg[1].upper() == 'RAW':
 			if '%s.txt' % msg[2] in taglist:
 				ftag = open("C:/SSBData/tags/%s.txt" % msg[2], "a")
@@ -537,7 +537,11 @@ async def choose(mch, user, msg):
 		await client.send_message(mch, msg[randint(2, len(msg))])
 
 async def credit(mch, server):
+<<<<<<< HEAD
 	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.10(Build 443)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+=======
+	embed = discord.Embed(title="Invite SSB Now!", description="Programmed by SimSimBot Team\nSpecial thanks to 심심의화신\n\nSimSimBot Beta 1.1.9(Build 440)", colour=discord.Colour.blue(), url = "https://discordapp.com/api/oauth2/authorize?client_id=421303509263056896&permissions=473167955&scope=bot", color=0x25DFE4)
+>>>>>>> 8f182d969084da33d49700ecfa11a8682f3b23b0
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
 
