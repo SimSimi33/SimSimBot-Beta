@@ -362,7 +362,7 @@ async def wiki(mch, msg, user, nomsg):
 			await client.send_message(mch, embed = embed)
 		else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist." % m.group(1))
 
-async def tag(mch, msg, user, nomsg):
+async def tag(mch, msg, user, nomsg, server):
 	taglist = os.listdir('C:/SSBData/tags')
 	if re.compile("^S!TAG (EDIT) (.+?) (.+)$", re.S | re.I).search(nomsg):
 		m = re.compile("^S!TAG (EDIT) (.+?) (.+)$", re.S | re.I).search(nomsg)
@@ -423,6 +423,19 @@ async def tag(mch, msg, user, nomsg):
 				ftagcount.close()
 				lines += 1
 			tagcontent = open("C:/SSBData/tags/%s.txt" % msg[1], "r").read()
+			tagcontent = re.compile('{userid}', re.I).sub(str(user.id), tagcontent)
+			tagcontent = re.compile('{username}', re.I).sub(user.name, tagcontent)
+			tagcontent = re.compile('{usernick}', re.I).sub(user.display_name, tagcontent)
+			tagcontent = re.compile('{serverid}', re.I).sub(str(server.id), tagcontent)
+			tagcontent = re.compile('{servername}', re.I).sub(server.name, tagcontent)
+			tagcontent = re.compile('{serverowner}', re.I).sub(str(server.owner.name), tagcontent)
+			randint_re = re.compile('{randint;([0-9]+);([0-9]+)}')
+			randchoice_re = re.compile('{randchoice([;\S+?]+)}')
+			for i in randint_re.finditer(tagcontent):
+				if int(i.group(2)) > int(i.group(1)):
+					randint_after = str(randint(int(i.group(1)), int(i.group(2))))
+					tagcontent = randint_re.sub(randint_after, tagcontent, count=1)
+				else: await client.send_message(mch, "<@%s>, the second number of randint should be bigger than the first one." % user.id)
 			await client.send_message(mch, tagcontent)
 		elif msg[1].upper() == 'RAW':
 			if '%s.txt' % msg[2] in taglist:
@@ -624,4 +637,4 @@ async def on_message(message):
 	elif re.compile("^SSB (CHOOSE|CHOICE)", re.I).search(tomsg):
 		await choose(mch, user, msg)
 	elif re.compile("^S!TAG", re.I).search(tomsg):
-		await tag(mch, msg, user, nomsg)
+		await tag(mch, msg, user, nomsg, server)
