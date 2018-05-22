@@ -128,6 +128,7 @@ async def ping(user, mch, msg):
 			fping.close()
 			fping = open("C:/SSBData/pingcount.txt", "a")
 			fping.write("%s 1\n" % user.id)
+			pingcount = 1
 			break
 		line0 = line[lines].split()
 		if len(line0) == 0:
@@ -429,13 +430,18 @@ async def tag(mch, msg, user, nomsg, server):
 			tagcontent = re.compile('{serverid}', re.I).sub(str(server.id), tagcontent)
 			tagcontent = re.compile('{servername}', re.I).sub(server.name, tagcontent)
 			tagcontent = re.compile('{serverowner}', re.I).sub(str(server.owner.name), tagcontent)
+			tagcontent = re.compile('{servermembers}', re.I).sub(str(server.member_count), tagcontent)
 			randint_re = re.compile('{randint;([0-9]+);([0-9]+)}')
-			randchoice_re = re.compile('{randchoice([;\S+?]+)}')
+			randchoice_re = re.compile('{randchoice(;[\s\S]*)}')
 			for i in randint_re.finditer(tagcontent):
 				if int(i.group(2)) > int(i.group(1)):
 					randint_after = str(randint(int(i.group(1)), int(i.group(2))))
 					tagcontent = randint_re.sub(randint_after, tagcontent, count=1)
-				else: await client.send_message(mch, "<@%s>, the second number of randint should be bigger than the first one." % user.id)
+			for i in randchoice_re.finditer(tagcontent):
+				randchoice_before = i.group(1)
+				randchoice_list = randchoice_before.split(';')
+				randchoice_after = randchoice_list[randint(1, len(randchoice_list) - 1)]
+				tagcontent = randint_re.sub(randchoice_after, tagcontent, count=1)
 			await client.send_message(mch, tagcontent)
 		elif msg[1].upper() == 'RAW':
 			if '%s.txt' % msg[2] in taglist:
@@ -467,6 +473,11 @@ async def tag(mch, msg, user, nomsg, server):
 			embed = discord.Embed(title="Tag **%s** Info" % msg[1], description="slice of information of %s" % msg[1], color=0x25DFE4)
 			embed.add_field(name="Creator", value=tagowner, inline=True)
 			embed.add_field(name="Used", value=tagcount, inline=True)
+			await client.send_message(mch, embed = embed)
+		elif msg[1].upper() == 'HELP':
+			fhelp = open("C:/SSBData/taghelptext.txt", "r")
+			embed = discord.Embed(title="SSB Tag Help", description = fhelp.read(), color=0x25DFE4)
+			fhelp.close()
 			await client.send_message(mch, embed = embed)
 		else: await client.send_message(mch, "Sorry, but tag **<%s>** does not exist." % msg[1])
 async def dice(mch, nomsg, user):
