@@ -382,11 +382,14 @@ async def tag(mch, msg, user, nomsg, server):
 						fver.close()
 						fver = open("C:/SSBData/tagownernick.txt", "a")
 						fver.write("%s %s#%s\n" % (msg[2], user.name, user.discriminator))
+						ait client.send_message(mch, "Tag **%s** was successfully created by <@%s>." % (msg[2], user.id))
 						break
 					line0 = line[lines].split(" ")
 					if line0[0] == msg[2]:
 						if user.id == line0[1]:
 							ftag.write('%s' % msg[3:])
+							ait client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
+						else: await client.send_message(mch, "Sorry, But this tag is now owned by you." % (msg[2], user.id))
 						break
 					lines += 1
 			else:
@@ -397,7 +400,7 @@ async def tag(mch, msg, user, nomsg, server):
 				fver.close()
 				fver = open("C:/SSBData/tagownernick.txt", "a")
 				fver.write("%s %s#%s\n" % (m.group(2), user.name, user.discriminator))
-			await client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
+				ait client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
 	else:
 		if '%s.txt' % msg[1] in taglist:
 			ftagcount = open("C:/SSBData/tagcount.txt", "r")
