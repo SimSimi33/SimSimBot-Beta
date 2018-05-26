@@ -382,13 +382,13 @@ async def tag(mch, msg, user, nomsg, server):
 						fver.close()
 						fver = open("C:/SSBData/tagownernick.txt", "a")
 						fver.write("%s %s#%s\n" % (msg[2], user.name, user.discriminator))
-						ait client.send_message(mch, "Tag **%s** was successfully created by <@%s>." % (msg[2], user.id))
+						await client.send_message(mch, "Tag **%s** was successfully created by <@%s>." % (msg[2], user.id))
 						break
 					line0 = line[lines].split(" ")
 					if line0[0] == msg[2]:
 						if user.id == line0[1]:
 							ftag.write('%s' % msg[3:])
-							ait client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
+							await client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
 						else: await client.send_message(mch, "Sorry, But this tag is now owned by you." % (msg[2], user.id))
 						break
 					lines += 1
@@ -400,7 +400,7 @@ async def tag(mch, msg, user, nomsg, server):
 				fver.close()
 				fver = open("C:/SSBData/tagownernick.txt", "a")
 				fver.write("%s %s#%s\n" % (m.group(2), user.name, user.discriminator))
-				ait client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
+				await client.send_message(mch, "Tag **%s** was successfully edited by <@%s>." % (msg[2], user.id))
 	else:
 		if '%s.txt' % msg[1] in taglist:
 			ftagcount = open("C:/SSBData/tagcount.txt", "r")
@@ -624,8 +624,11 @@ async def on_message(message):
 		await latestupdate(mch)
 	elif re.compile("^(SSB|심심봇) (업데이트|최근업데이트|최신업데이트|최신업뎃)", re.I).search(tomsg):
 		await latestupdate_kor(mch)
-	elif re.compile("^SSB (SAY|SPEAK)", re.I).search(tomsg):
+	elif re.compile("^SSB (SAY|SPEAK) ", re.I).search(tomsg):
 		await client.send_message(message.channel, "%s" % " ".join(msg[2:]))
+	elif re.compile("^SSB (SAYD|SPEAKD|SAYDELETE)", re.I).search(tomsg):
+		await client.send_message(message.channel, "%s" % " ".join(msg[2:]))
+		await client.delete_message(message)
 	elif re.compile("^SSB [0-9]+D[0-9]+$", re.I).search(tomsg):
 		await dice(mch, nomsg, user)
 	elif re.compile("^SSB (IMGUR|IMGURIMAGE)", re.I).search(tomsg):
