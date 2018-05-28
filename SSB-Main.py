@@ -29,64 +29,6 @@ def moneycheck(user):
 			return line0[1]
 		lines += 1
 
-def moneyfix(user, moneyindex):
-	fmoney = open("C:/SSBData/moneylist.txt", "r")
-	line = fmoney.readlines()
-	lines = 0
-	while True:
-		if lines + 1 > len(line):
-			fmoney.close()
-			fmoney = open("C:/SSBData/moneylist.txt", "a")
-			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
-			return moneyindex
-		line0 = line[lines].split()
-		if len(line0) == 0:
-			lines += 1
-			continue
-		data0 = ""
-		if line0[0] == str(user.id):
-			money_def = int(line0[1]) + moneyindex
-			line[lines] = "%s %s" % (user.id, money_def)
-			fmoney.close()
-			fmoney = open("C:/SSBData/moneylist.txt", "w")
-			for data in line:
-				if len(data) > 3:
-					# If line is blank, program does not duplicate line to data.
-					data0 += "%s\n" % data
-			fmoney.write(data0)
-			fmoney.close()
-			return money_def
-		lines += 1
-
-def moneyfix(user, moneyindex):
-	fmoney = open("C:/SSBData/moneylist.txt", "r")
-	line = fmoney.readlines()
-	lines = 0
-	while True:
-		if lines + 1 > len(line):
-			fmoney.close()
-			fmoney = open("C:/SSBData/moneylist.txt", "a")
-			fmoney.write("%s %s\n" % (user.id,str(moneyindex)))
-			return moneyindex
-		line0 = line[lines].split()
-		if len(line0) == 0:
-			lines += 1
-			continue
-		data0 = ""
-		if line0[0] == str(user.id):
-			money_def = int(line0[1]) + moneyindex
-			line[lines] = "%s %s" % (user.id, money_def)
-			fmoney.close()
-			fmoney = open("C:/SSBData/moneylist.txt", "w")
-			for data in line:
-				if len(data) > 3:
-					# If line is blank, program does not duplicate line to data.
-					data0 += "%s\n" % data
-			fmoney.write(data0)
-			fmoney.close()
-			return money_def
-		lines += 1
-
 def dailyupdate(user):
 	fmoney = open("C:/SSBData/dailyupdate.txt", "r")
 	line = fmoney.readlines()
@@ -109,6 +51,38 @@ def dailyupdate(user):
 			line[lines] = "%s %s" % (user.id,ftime)
 			fmoney.close()
 			fmoney = open("C:/SSBData/dailyupdate.txt", "w")
+			for data in line:
+				if len(data) > 3:
+					# If line is blank, program does not duplicate line to data.
+					data0 += "%s\n" % data
+			fmoney.write(data0)
+			fmoney.close()
+			return 1
+			break
+		lines += 1
+
+def gelupdate(user):
+	fmoney = open("C:/SSBData/gelupdate.txt", "r")
+	line = fmoney.readlines()
+	lines = 0
+	ftime = time.time()
+	while True:
+		if lines + 1 > len(line):
+			fmoney.close()
+			fmoney = open("C:/SSBData/gelupdate.txt", "a")
+			fmoney.write("%s %s\n" % (user.id,ftime))
+			return 1
+		line0 = line[lines].split(" ")
+		if len(line0) == 0:
+			lines += 1
+			continue
+		data0 = ""
+		if line0[0] == str(user.id):
+			if float(line0[1]) > ftime - 3:
+				return 0
+			line[lines] = "%s %s" % (user.id,ftime)
+			fmoney.close()
+			fmoney = open("C:/SSBData/gelupdate.txt", "w")
 			for data in line:
 				if len(data) > 3:
 					# If line is blank, program does not duplicate line to data.
@@ -220,29 +194,33 @@ async def neko19(mch):
 	nekourl = neko.search(nekoreq)
 	await client.send_message(mch,"Here is a neko for you! ~~Look Behind you...~~\n%s" % nekourl.group(1))
 
-async def gelbooru(mch, msg):
+async def gelbooru(mch, msg, user):
 	try:
-		if len(msg) == 2:
-			gelnum = randint(4000000, 4175000)
-			neko = re.compile('src="(https://simg3\.gelbooru\.com/.+?)"', re.S)
-			gelreq = requests.get('https://gelbooru.com/index.php?page=post&s=view&id=%s' % gelnum).text
-			gelurl = neko.search(gelreq)
-			await client.send_message(mch,"Here is a random gelbooru image for you!(image number: %d)\n%s" % (gelnum,gelurl.group(1)))
-		else:
-			tag = " ".join(msg[2:])
-			pagenum = randint(0,10) * 42
-			tagneko = re.compile('<span id="s([0-9]+)"')
-			tagreq = requests.get('https://gelbooru.com/index.php?page=post&s=list&tags=%s&pid=%s' % (tag,pagenum)).text
-			tagurl = tagneko.findall(tagreq)
-			if tagurl:
-				gelnum = tagurl.pop()
-				print(gelnum)
+		aaap = gelupdate(user)
+		print(aaap)
+		if aaap == 1:
+			if len(msg) == 2:
+				gelnum = randint(3000000, 4175000)
 				neko = re.compile('src="(https://simg3\.gelbooru\.com/.+?)"', re.S)
 				gelreq = requests.get('https://gelbooru.com/index.php?page=post&s=view&id=%s' % gelnum).text
 				gelurl = neko.search(gelreq)
-				await client.send_message(mch,"Random **tag:%s** gelbooru image for you!(image number: %s)\n%s" % (tag,gelnum,gelurl.group(1)))
+				await client.send_message(mch,"Here is a random gelbooru image for you!(image number: %d)\n%s" % (gelnum,gelurl.group(1)))
 			else:
-				await client.send_message(mch,"Sorry, But I can't find the tag:**%s**" % tag)
+				tag = " ".join(msg[2:])
+				pagenum = randint(0,10) * 42
+				tagneko = re.compile('<span id="s([0-9]+)"')
+				tagreq = requests.get('https://gelbooru.com/index.php?page=post&s=list&tags=%s&pid=%s' % (tag,pagenum)).text
+				tagurl = tagneko.findall(tagreq)
+				if tagurl:
+					gelnum = tagurl.pop()
+					print(gelnum)
+					neko = re.compile('src="(https://simg3\.gelbooru\.com/.+?)"', re.S)
+					gelreq = requests.get('https://gelbooru.com/index.php?page=post&s=view&id=%s' % gelnum).text
+					gelurl = neko.search(gelreq)
+					await client.send_message(mch,"Random **tag:%s** gelbooru image for you!(image number: %s)\n%s" % (tag,gelnum,gelurl.group(1)))
+				else:
+					await client.send_message(mch,"Sorry, But I can't find the tag:**%s**" % tag)
+		else: await client.send_message(mch,"<@%s>, please wait 3 seconds cooltime to receive another gelbooru image." % user.id)
 	except:
 		await client.send_message(mch,"Sorry, But please try again in a few seconds.")
 async def danbooru(mch):
@@ -580,8 +558,12 @@ async def on_message(message):
 	user = message.author
 	mch = message.channel
 	server = message.server
+	print(user.display_name)
 	print(nomsg)
 	if message.author == client.user:
+		return
+	elif message.server == None:
+		await client.send_message(mch, "Sorry, please use SSB in Discord server instead of DM or PM.")
 		return
 	elif re.compile("^SSB (PING|PONG)$", re.I).search(tomsg):
 		await ping(user, mch, msg)
@@ -602,7 +584,7 @@ async def on_message(message):
 	elif re.compile("^SSB (NEKO19|PUSSYNEKO|NEKOLEWD|LEWDNEKO)$", re.I).search(tomsg):
 		await neko19(mch)
 	elif re.compile("^SSB GELBOORU", re.I).search(tomsg):
-		await gelbooru(mch, msg)
+		await gelbooru(mch, msg, user)
 	elif re.compile("^SSB DANBOORU", re.I).search(tomsg):
 		await danbooru(mch)
 	elif re.compile("^SSB SEARCH", re.I).search(tomsg):
