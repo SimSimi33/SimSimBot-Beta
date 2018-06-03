@@ -61,6 +61,36 @@ def dailyupdate(user):
 			break
 		lines += 1
 
+def moneyfix(user, money):
+	fmoney = open("C:/SSBData/moneylist.txt", "r")
+	line = fmoney.readlines()
+	lines = 0
+	while True:
+		if lines + 1 > len(line):
+			fmoney.close()
+			fmoney = open("C:/SSBData/moneylist.txt", "a")
+			fmoney.write("%s %s" % (user.id, money))
+			return int(money)
+		line0 = line[lines].split()
+		if len(line0) == 0:
+			lines += 1
+			continue
+		data0 = ""
+		if line0[0] == str(user.id):
+			aftermoney = int(line0[1]) + int(money)
+			line[lines] = "%s %s" % (user.id, aftermoney)
+			fmoney.close()
+			fmoney = open("C:/SSBData/moneylist.txt", "w")
+			for data in line:
+				if len(data) > 3:
+					# If line is blank, program does not duplicate line to data.
+					data0 += "%s\n" % data
+			fmoney.write(data0)
+			fmoney.close()
+			return aftermoney
+			break
+		lines += 1
+
 def gelupdate(user):
 	fmoney = open("C:/SSBData/gelupdate.txt", "r")
 	line = fmoney.readlines()
@@ -182,17 +212,25 @@ async def serverinfo(server, mch):
 	embed.set_thumbnail(url=server.icon_url)
 	await client.send_message(mch, embed = embed)
 
-async def neko(mch):
-	neko = re.compile('<meta property="og:image" content="(.+)"/>', re.S)
-	nekoreq = requests.get('https://nekos.life/').text
-	nekourl = neko.search(nekoreq)
-	await client.send_message(mch,"Here is a neko for you!\n%s" % nekourl.group(1))
+async def neko(mch, user):
+	aaap = gelupdate(user)
+	print(aaap)
+	if aaap == 1:
+		neko = re.compile('<meta property="og:image" content="(.+)"/>', re.S)
+		nekoreq = requests.get('https://nekos.life/').text
+		nekourl = neko.search(nekoreq)
+		await client.send_message(mch,"Here is a neko for you!\n%s" % nekourl.group(1))
+	else: await client.send_message(mch,"<@%s>, please wait 3 seconds cooltime to receive another image." % user.id)
 
-async def neko19(mch):
-	neko = re.compile('<img src="(.+?)"')
-	nekoreq = requests.get('https://nekos.life/lewd').text
-	nekourl = neko.search(nekoreq)
-	await client.send_message(mch,"Here is a neko for you! ~~Look Behind you...~~\n%s" % nekourl.group(1))
+async def neko19(mch, user):
+	aaap = gelupdate(user)
+	print(aaap)
+	if aaap == 1:
+		neko = re.compile('<img src="(.+?)"')
+		nekoreq = requests.get('https://nekos.life/lewd').text
+		nekourl = neko.search(nekoreq)
+		await client.send_message(mch,"Here is a neko for you!\n%s" % nekourl.group(1))
+	else: await client.send_message(mch,"<@%s>, please wait 3 seconds cooltime to receive another image." % user.id)
 
 async def gelbooru(mch, msg, user):
 	try:
@@ -220,7 +258,7 @@ async def gelbooru(mch, msg, user):
 					await client.send_message(mch,"Random **tag:%s** gelbooru image for you!(image number: %s)\n%s" % (tag,gelnum,gelurl.group(1)))
 				else:
 					await client.send_message(mch,"Sorry, But I can't find the tag:**%s**" % tag)
-		else: await client.send_message(mch,"<@%s>, please wait 3 seconds cooltime to receive another gelbooru image." % user.id)
+		else: await client.send_message(mch,"<@%s>, please wait 3 seconds cooltime to receive another image." % user.id)
 	except:
 		await client.send_message(mch,"Sorry, But please try again in a few seconds.")
 async def danbooru(mch):
@@ -258,8 +296,8 @@ async def wiki(mch, msg, user, nomsg):
 	if len(msg) == 2:
 		await client.send_message(mch, "<@%s>, Welcome to SSB wiki.\n\n`ssb wiki <article name> <view/edit/revision> <edit/revision number>`" % user.id)
 	wikilist = os.listdir('C:/SSBData/wiki')
-	if re.compile("^SSB WIKI (.+) (EDIT|HISTORY|VIEW|REVISION) (.+?)$", re.S | re.I).search(nomsg):
-		m = re.compile("SSB WIKI (.+) (EDIT|HISTORY|VIEW|REVISION) (.+?)$", re.S | re.I).search(nomsg)
+	if re.compile("^SSB WIKI (.+) (EDIT|HISTORY|REVISION|REVCOUNT) (.+?)$", re.S | re.I).search(nomsg):
+		m = re.compile("SSB WIKI (.+) (EDIT|HISTORY|REVISION|REVCOUNT) (.+?)$", re.S | re.I).search(nomsg)
 		fwikiver = open("C:/SSBData/wikiver/%s.txt" % m.group(1), "a")
 		fver = open("C:/SSBData/wikiver.txt", "r")
 		if m.group(2).upper() == 'EDIT':
@@ -329,9 +367,9 @@ async def wiki(mch, msg, user, nomsg):
 								row = 0
 								break
 					elif row == len(redata):
-						await client.send_message(mch, "Sorry, but revision **<%s>** does not exist!" % m.group(3))
+						await client.send_message(mch, "Sorry, but revision **<%s>** does not exist." % m.group(3))
 					row += 1
-			else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist!" % m.group(1))
+			else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist." % m.group(1))
 	elif re.compile("^SSB WIKI (.+) VIEW", re.S | re.I).search(nomsg):
 		m = re.compile("^SSB WIKI (.+) VIEW", re.S | re.I).search(nomsg)
 		if '%s.txt' % m.group(1) in wikilist:
@@ -340,6 +378,21 @@ async def wiki(mch, msg, user, nomsg):
 			fwiki.close()
 			await client.send_message(mch, embed = embed)
 		else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist." % m.group(1))
+	elif re.compile("^SSB WIKI (.+) REVCOUNT", re.S | re.I).search(nomsg):
+		m = re.compile("^SSB WIKI (.+) REVCOUNT", re.S | re.I).search(nomsg)
+		if '%s.txt' % m.group(1) in wikilist:
+			frevision = open("C:/SSBData/wikiver.txt", "r")
+			redata = frevision.readlines()
+			revcount = 0
+			for i in redata:
+				i = i.split(" ")
+				if len(i) >= 1:
+					if i[0].upper() == m.group(1):
+						revcount = i[1][:-1]
+						await client.send_message(mch, "Currently, article **%s** has %s revisions." % (m.group(1), revcount))
+						return
+		else: await client.send_message(mch, "Sorry, but article **<%s>** does not exist." % m.group(1))
+
 
 async def tag(mch, msg, user, nomsg, server):
 	taglist = os.listdir('C:/SSBData/tags')
@@ -558,7 +611,7 @@ async def on_message(message):
 	user = message.author
 	mch = message.channel
 	server = message.server
-	print(user.display_name)
+	print("%s#%s" % (user.display_name, ))
 	print(nomsg)
 	if message.author == client.user:
 		return
@@ -580,9 +633,9 @@ async def on_message(message):
 	elif re.compile("^SSB (SERVER|SERVERINFO|MYSERVER)", re.I).search(tomsg):
 		await serverinfo(server, mch)
 	elif re.compile("^SSB (NEKO|NEKOIMG|NEKOIMAGE)$", re.I).search(tomsg):
-		await neko(mch)
+		await neko(mch, user)
 	elif re.compile("^SSB (NEKO19|PUSSYNEKO|NEKOLEWD|LEWDNEKO)$", re.I).search(tomsg):
-		await neko19(mch)
+		await neko19(mch, user)
 	elif re.compile("^SSB GELBOORU", re.I).search(tomsg):
 		await gelbooru(mch, msg, user)
 	elif re.compile("^SSB DANBOORU", re.I).search(tomsg):
